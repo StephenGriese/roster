@@ -1,25 +1,34 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/gocolly/colly"
+	"github.com/StephenGriese/roster/rest"
+	"io"
+	"os"
+	"sort"
 )
 
-type Player struct {
-	url, image, name, price string
+func main() {
+	ctx := context.Background()
+	if err := run(ctx, os.Stdout, os.Args); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
+	}
 }
 
-func main() {
-
-	// creating a new Colly instance
-	c := colly.NewCollector()
-
-	// scraping logic
-	c.OnHTML("div", func(e *colly.HTMLElement) {
-		fmt.Printf("e: %v", e)
+func run(_ context.Context, w io.Writer, _ []string) error {
+	ps := rest.NewPlayerService()
+	players, err := ps.Players()
+	if err != nil {
+		return fmt.Errorf("error getting players: %w", err)
+	}
+	sort.Slice(players, func(i, j int) bool {
+		return players[i].SweaterNumber < players[j].SweaterNumber
 	})
-
-	// visiting the target page
-	c.Visit("https://www.nhl.com/flyers/roster")
+	for _, b := range players {
+		fmt.Fprintf(w, "%2d   %-25s %s\n", b.SweaterNumber, b.FirstName+" "+b.LastName, b.Position)
+	}
+	return nil
 
 }
