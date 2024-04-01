@@ -1,5 +1,9 @@
 package roster
 
+type PlayerService interface {
+	Players() ([]Player, error)
+}
+
 type Position uint
 
 const (
@@ -27,8 +31,4 @@ type Player struct {
 	LastName      string   `json:"lastName"`
 	SweaterNumber int      `json:"sweaterNumber"`
 	Position      Position `json:"position"`
-}
-
-type PlayerService interface {
-	Players() ([]Player, error)
 }
