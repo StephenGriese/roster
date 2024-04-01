@@ -145,8 +145,8 @@ jobs:
         uses: google-github-actions/deploy-cloud-functions@main
         with:
           project_id: roster-griese
-          name: translate
-          entry_point: Translate
+          name: roster
+          entry_point: Roster
           runtime: go119
 
       - name: Test the function

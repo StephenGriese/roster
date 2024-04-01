@@ -6,6 +6,6 @@ import (
 	"github.com/StephenGriese/hello-api/handlers/rest"
 )
 
-func Translate(w http.ResponseWriter, r *http.Request) {
+func Roster(w http.ResponseWriter, r *http.Request) {
 	rest.RosterHandler(w, r)
 }
