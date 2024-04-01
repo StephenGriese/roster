@@ -1,6 +1,23 @@
-# Roster
+# Hello API
+## Dependencies
 
-A handy app to fetch current Flyers roster from (https://api-web.nhle.com/v1/roster/PHI/20232024) and dump out 
-a list of players, listed by sweater number. 
+- Go version 1.18
 
-I don't care if they are O, or D, or Goalie. I just want to see a player's number and quickly look up their name. 
+## Setup
+
+## Release Milestones
+...
+## Release Milestones
+
+### V0 (1 day)
+- [ ] Onboarding Documentation
+- [ ] Simple API response (hello world!)
+- [ ] Unit tests
+- [ ] Running somewhere other than the dev machine
+
+### V1 (7 days)
+- [ ] Create translation endpoint
+- [ ] Store translations in short-term storage
+- [ ] Call existing service for translation
+- [ ] Move towards long-term storage
+- 

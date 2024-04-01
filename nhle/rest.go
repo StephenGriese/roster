@@ -1,12 +1,13 @@
-// Package rest implements a PlayerService that uses api-web.nhle.com as a datasource
-package rest
+// Package nhle implements a PlayerService that uses api-web.nhle.com as a datasource
+package nhle
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/StephenGriese/roster/roster"
 	"net/http"
 	"time"
+
+	"github.com/StephenGriese/roster/roster"
 )
 
 const (
@@ -88,6 +89,7 @@ func (ps playerService) Players() ([]roster.Player, error) {
 	return result, nil
 }
 
+/*
 func (ps playerService) sendRequest(req *http.Request, v interface{}) error {
 	res, err := ps.HTTPClient.Do(req)
 	if err != nil {
@@ -123,3 +125,4 @@ func (ps playerService) sendRequest(req *http.Request, v interface{}) error {
 
 	return nil
 }
+*/
