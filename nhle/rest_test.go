@@ -1,9 +1,10 @@
 package nhle_test
 
 import (
-	"github.com/StephenGriese/hello-api/nhle"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/StephenGriese/roster/nhle"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetUsers(t *testing.T) {

@@ -2,10 +2,7 @@ module github.com/StephenGriese/roster
 
 go 1.19
 
-require (
-	github.com/StephenGriese/hello-api v0.0.0-20240401161836-fe85f9928569
-	github.com/stretchr/testify v1.9.0
-)
+require github.com/stretchr/testify v1.9.0
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
