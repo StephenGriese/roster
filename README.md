@@ -20,4 +20,4 @@
 - [ ] Store translations in short-term storage
 - [ ] Call existing service for translation
 - [ ] Move towards long-term storage
-- 
+- [ ] Figure out Heroku deployment
