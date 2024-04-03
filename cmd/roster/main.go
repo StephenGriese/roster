@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/StephenGriese/roster/handlers"
+	"github.com/StephenGriese/roster/views"
 )
 
 func main() {
@@ -28,9 +29,11 @@ func main() {
 		addr = ":8080"
 	}
 
+	players := views.NewView("bootstrap", "web/views/contacts.gohtml")
+
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/roster", handlers.RosterHandler)
+	mux.HandleFunc("/roster", handlers.HandleGetRoster(logger, players))
 
 	log.Printf("sjg listening on %s\n", addr)
 

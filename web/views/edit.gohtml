@@ -1,0 +1,13 @@
+{{define "yield"}}
+    <form action="/contacts/edit/{{.C.ID}}" method="post">
+        {{ template "contactFields" . }}
+    </form>
+
+    <form action="/contacts/delete/{{.C.ID}}" method="post">
+        <button>Delete Contact</button>
+    </form>
+
+    <p>
+        <a href="/contacts">Back</a>
+    </p>
+{{end}}}
