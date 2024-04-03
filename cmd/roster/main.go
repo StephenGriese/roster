@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 
@@ -10,6 +11,15 @@ import (
 )
 
 func main() {
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger.Debug("Debug message")
+	logger.Info("Info message")
+	logger.Warn("Warning message")
+	logger.Error("Error message")
+
+	wd, _ := os.Getwd()
+	logger.Info("Starting server", "working dir", wd)
 
 	addr := fmt.Sprintf(":%s", os.Getenv("PORT"))
 	if addr == ":" {
