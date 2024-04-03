@@ -20,6 +20,8 @@ func main() {
 
 	wd, _ := os.Getwd()
 	logger.Info("Starting server", "working dir", wd)
+	log.Printf("working dir: %s\n", wd)
+	fmt.Println("printf working dir: ", wd)
 
 	addr := fmt.Sprintf(":%s", os.Getenv("PORT"))
 	if addr == ":" {
@@ -30,7 +32,7 @@ func main() {
 
 	mux.HandleFunc("/roster", handlers.RosterHandler)
 
-	log.Printf("listening on %s\n", addr)
+	log.Printf("sjg listening on %s\n", addr)
 
 	log.Fatal(http.ListenAndServe(addr, mux))
 }
