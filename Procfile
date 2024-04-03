@@ -1,1 +1,1 @@
-web: roster
+web: go run cmd/roster/main.go
