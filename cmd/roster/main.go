@@ -33,7 +33,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/favicon.ico", handlers.HandleGetFavicon(logger))
+	mux.Handle("/*", http.FileServer(http.Dir("./web/static/")))
+
 	mux.HandleFunc("/roster", handlers.HandleGetRoster(logger, players))
 
 	log.Printf("sjg listening on %s\n", addr)
