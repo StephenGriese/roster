@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	BaseURLV1 = "https://api-web.nhle.com/v1/roster/PHI/20232024"
+	BaseURLV1 = "https://api-web.nhle.com/v1/roster/PHI/20242025"
 )
 
 func NewPlayerService() roster.PlayerService {

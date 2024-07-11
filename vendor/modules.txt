@@ -1,6 +1,11 @@
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
+# github.com/maragudk/gomponents v0.20.4
+## explicit; go 1.18
+github.com/maragudk/gomponents
+github.com/maragudk/gomponents/components
+github.com/maragudk/gomponents/html
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
