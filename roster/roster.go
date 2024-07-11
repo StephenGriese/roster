@@ -1,9 +1,5 @@
 package roster
 
-type PlayerService interface {
-	Players() ([]Player, error)
-}
-
 type Position uint
 
 const (

@@ -14,28 +14,26 @@ const (
 	BaseURLV1 = "https://api-web.nhle.com/v1/roster/PHI/20242025"
 )
 
-func NewPlayerService() roster.PlayerService {
-	return playerService{
-		BaseURL: BaseURLV1,
-		HTTPClient: &http.Client{
+func NewPlayerService() PlayerService {
+	return PlayerService{
+		baseURL: BaseURLV1,
+		httpClient: &http.Client{
 			Timeout: time.Minute,
 		},
 	}
 }
 
-type playerService struct {
-	BaseURL    string
-	HTTPClient *http.Client
+type PlayerService struct {
+	baseURL    string
+	httpClient *http.Client
 }
 
-var _ roster.PlayerService = playerService{}
-
-func (ps playerService) Players() ([]roster.Player, error) {
+func (ps PlayerService) Players() ([]roster.Player, error) {
 	req, err := http.NewRequest("GET", BaseURLV1, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-	res, err := ps.HTTPClient.Do(req)
+	res, err := ps.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
