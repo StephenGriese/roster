@@ -81,14 +81,16 @@ func addRoutes(
 	logger *slog.Logger,
 	buildInfo BuildInfo,
 ) {
+	mux.Handle("/roster", createGetRosterHandler(logger))
+	mux.Handle("/build-info", createGetBuildInfoHandler(logger, buildInfo))
 	mux.Handle("/*", http.FileServer(http.Dir("./web/static/")))
-	mux.HandleFunc("/roster", handleGetRoster(logger))
-	mux.Handle("/build-info", handleGetBuildInfo(buildInfo))
 }
 
-func handleGetBuildInfo(buildInfo BuildInfo) http.Handler {
+func createGetBuildInfoHandler(logger *slog.Logger, buildInfo BuildInfo) http.Handler {
+	logger.Info("creating build info handler")
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
+			logger.Info("Getting build info")
 			err := Page(BuildInfoContent(buildInfo)).Render(w)
 			if err != nil {
 				http.Error(w, "Error", http.StatusInternalServerError)
@@ -96,24 +98,30 @@ func handleGetBuildInfo(buildInfo BuildInfo) http.Handler {
 		})
 }
 
-func handleGetRoster(logger *slog.Logger) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		logger.Info("Getting roster")
-		ps := nhle.NewPlayerService()
-		players, err := ps.Players()
-		if err != nil {
-			http.Error(w, "Error", http.StatusInternalServerError)
-			return
-		}
-		sort.Slice(players, func(i, j int) bool {
-			return players[i].SweaterNumber < players[j].SweaterNumber
-		})
-		err = Page(Table(players)).Render(w)
-		if err != nil {
-			logger.Error("Error rendering view", "error", err)
-			http.Error(w, "Error", http.StatusInternalServerError)
-		}
+func createGetRosterHandler(logger *slog.Logger) http.Handler {
+	type thing struct {
+		counter int
 	}
+	theThing := thing{}
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			theThing.counter++
+			logger.Info("Getting roster", "counter", theThing.counter)
+			ps := nhle.NewPlayerService()
+			players, err := ps.Players()
+			if err != nil {
+				http.Error(w, "Error", http.StatusInternalServerError)
+				return
+			}
+			sort.Slice(players, func(i, j int) bool {
+				return players[i].SweaterNumber < players[j].SweaterNumber
+			})
+			err = Page(Table(players)).Render(w)
+			if err != nil {
+				logger.Error("Error rendering view", "error", err)
+				http.Error(w, "Error", http.StatusInternalServerError)
+			}
+		})
 }
 
 func Page(body g.Node) g.Node {
