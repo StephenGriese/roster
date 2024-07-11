@@ -1,36 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"log"
-	"log/slog"
-	"net/http"
 	"os"
 
-	"github.com/StephenGriese/roster/handlers"
-	"github.com/StephenGriese/roster/views"
+	"github.com/StephenGriese/roster/app"
 )
 
 func main() {
-
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	wd, _ := os.Getwd()
-	logger.Info("Starting server", "working dir", wd)
-
-	addr := fmt.Sprintf(":%s", os.Getenv("PORT"))
-	if addr == ":" {
-		addr = ":8080"
+	ctx := context.Background()
+	if err := app.Run(ctx, os.Stdin, os.Stdout, os.Stderr, os.Getenv, os.Getwd); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "error: %s\n", err)
+		os.Exit(1)
 	}
-
-	players := views.NewView("bootstrap", "web/views/contacts.gohtml")
-
-	mux := http.NewServeMux()
-
-	mux.Handle("/*", http.FileServer(http.Dir("./web/static/")))
-
-	mux.HandleFunc("/roster", handlers.HandleGetRoster(logger, players))
-
-	log.Printf("listening on %s\n", addr)
-
-	log.Fatal(http.ListenAndServe(addr, mux))
 }

@@ -12,10 +12,9 @@ import (
 	h "github.com/maragudk/gomponents/html"
 
 	"github.com/StephenGriese/roster/nhle"
-	"github.com/StephenGriese/roster/views"
 )
 
-func HandleGetRoster(logger *slog.Logger, view *views.View) http.HandlerFunc {
+func HandleGetRoster(logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logger.Info("Getting roster")
 		ps := nhle.NewPlayerService()
