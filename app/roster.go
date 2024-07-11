@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"net/http"
 	"sync"
@@ -14,17 +13,26 @@ import (
 	"github.com/StephenGriese/roster/handlers"
 )
 
+type BuildInfo struct {
+	Builder   string
+	BuildTime string
+	Goversion string
+	Version   string
+}
+
 func Run(
 	ctx context.Context,
 	_ io.Reader,
 	stdout, stderr io.Writer,
 	getenv func(string) string,
 	getwd func() (string, error),
+	buildInfo BuildInfo,
 ) error {
 
 	logger := slog.New(slog.NewJSONHandler(stdout, nil))
 	wd, _ := getwd()
 	logger.Info("Starting server", "working dir", wd)
+	logger.Info("Build info", "builder", buildInfo.Builder, "buildTime", buildInfo.BuildTime, "goversion", buildInfo.Goversion, "version", buildInfo.Version)
 
 	addr := fmt.Sprintf(":%s", getenv("PORT"))
 	if addr == ":" {
@@ -43,7 +51,7 @@ func Run(
 	}
 
 	go func() {
-		log.Printf("listening on %s\n", addr)
+		logger.Info("starting http server", "addr", server.Addr)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			_, _ = fmt.Fprintf(stderr, "error shutting down http server: %s\n", err)
 		}
