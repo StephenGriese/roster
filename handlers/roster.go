@@ -1,14 +1,15 @@
 package handlers
 
 import (
-	"github.com/StephenGriese/roster/roster"
-	g "github.com/maragudk/gomponents"
-	c "github.com/maragudk/gomponents/components"
-	h "github.com/maragudk/gomponents/html"
 	"log/slog"
 	"net/http"
 	"sort"
 	"strconv"
+
+	"github.com/StephenGriese/roster/roster"
+	g "github.com/maragudk/gomponents"
+	c "github.com/maragudk/gomponents/components"
+	h "github.com/maragudk/gomponents/html"
 
 	"github.com/StephenGriese/roster/nhle"
 	"github.com/StephenGriese/roster/views"

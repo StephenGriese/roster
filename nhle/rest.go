@@ -76,7 +76,10 @@ func (ps playerService) Players() ([]roster.Player, error) {
 	if err = json.NewDecoder(res.Body).Decode(&apiResp); err != nil {
 		return nil, err
 	}
-	var result []roster.Player
+
+	numPlayers := len(apiResp.Forwards) + len(apiResp.Defensemen) + len(apiResp.Goalies)
+	result := make([]roster.Player, 0, numPlayers)
+
 	for _, p := range apiResp.Forwards {
 		result = append(result, toRosterPlayer(p, roster.Forward))
 	}

@@ -25,6 +25,8 @@ go.work
 coverage.out
 cover.html
 
-.idea
+.idea/
 
 api
+
+target/
