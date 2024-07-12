@@ -7,6 +7,8 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"os"
+	"os/signal"
 	"sort"
 	"strconv"
 	"sync"
@@ -34,6 +36,8 @@ func Run(
 	getwd func() (string, error),
 	buildInfo BuildInfo,
 ) error {
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
+	defer cancel()
 
 	logger := slog.New(slog.NewJSONHandler(stdout, nil))
 	wd, _ := getwd()
@@ -55,7 +59,7 @@ func Run(
 	go func() {
 		logger.Info("starting http server", "addr", server.Addr)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			_, _ = fmt.Fprintf(stderr, "error shutting down http server: %s\n", err)
+			logger.Warn("error starting http server", "error", err)
 		}
 	}()
 
@@ -64,12 +68,13 @@ func Run(
 	go func() {
 		defer wg.Done()
 		<-ctx.Done()
+		logger.Info("shutting down http server")
 		// make a new context for the Shutdown (thanks Alessandro Rosetti)
 		shutdownCtx := context.Background()
 		shutdownCtx, cancel := context.WithTimeout(shutdownCtx, 10*time.Second)
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {
-			_, _ = fmt.Fprintf(stderr, "error shutting down http server: %s\n", err)
+			logger.Warn("error shutting down http server", "error", err)
 		}
 	}()
 	wg.Wait()
