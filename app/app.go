@@ -31,7 +31,7 @@ type BuildInfo struct {
 func Run(
 	ctx context.Context,
 	_ io.Reader,
-	stdout, stderr io.Writer,
+	stdout io.Writer,
 	getenv func(string) string,
 	getwd func() (string, error),
 	buildInfo BuildInfo,
