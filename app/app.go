@@ -104,14 +104,9 @@ func createGetBuildInfoHandler(logger *slog.Logger, buildInfo BuildInfo) http.Ha
 }
 
 func createGetRosterHandler(logger *slog.Logger) http.Handler {
-	type thing struct {
-		counter int
-	}
-	theThing := thing{}
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			theThing.counter++
-			logger.Info("Getting roster", "counter", theThing.counter)
+			logger.Info("Getting roster")
 			ps := nhle.NewPlayerService()
 			players, err := ps.Players()
 			if err != nil {
