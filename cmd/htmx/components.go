@@ -21,6 +21,7 @@ func Page(body ...g.Node) g.Node {
 
 func Table(players []roster.Player) g.Node {
 	return h.Table(
+		h.ID("player-table"),
 		h.THead(
 			h.Tr(
 				h.Th(g.Text("Number")),
@@ -35,7 +36,6 @@ func Table(players []roster.Player) g.Node {
 
 func TableBody(players []roster.Player) g.Node {
 	return h.TBody(
-		h.ID("player-table"),
 		g.Group(g.Map(players, func(p roster.Player) g.Node {
 			return h.Tr(
 				h.Td(g.Text(strconv.Itoa(p.SweaterNumber))),
