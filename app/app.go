@@ -203,7 +203,7 @@ func TeamSelect() g.Node {
 	br := h.Br()
 
 	s := h.Select(
-		g.Attr("hx-put", "/roster/players-for-team"),
+		g.Attr("hx-get", "/roster/players-for-team"),
 		g.Attr("hx-target", "#player-table"),
 		h.Name("team"),
 		h.ID("team-select"),
