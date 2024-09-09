@@ -9,7 +9,7 @@ import (
 
 func TestGetUsers(t *testing.T) {
 	ps := nhle.NewPlayerService()
-	players, err := ps.Players()
+	players, err := ps.Players("PHI")
 	assert.NoError(t, err)
 	assert.True(t, len(players) > 0)
 }

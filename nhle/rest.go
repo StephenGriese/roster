@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	BaseURLV1 = "https://api-web.nhle.com/v1/roster/PHI/20242025"
+	BaseURLV1 = "https://api-web.nhle.com/v1/roster/%s/current"
 )
 
 func NewPlayerService() PlayerService {
@@ -28,8 +28,9 @@ type PlayerService struct {
 	httpClient *http.Client
 }
 
-func (ps PlayerService) Players() ([]roster.Player, error) {
-	req, err := http.NewRequest("GET", BaseURLV1, nil)
+func (ps PlayerService) Players(team string) ([]roster.Player, error) {
+	s := fmt.Sprintf(BaseURLV1, team)
+	req, err := http.NewRequest("GET", s, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}

@@ -25,7 +25,7 @@ func main() {
 		Version:   version,
 	}
 
-	if err := app.Run(ctx, os.Stdin, os.Stdout, os.Stderr, os.Getenv, os.Getwd, buildInfo); err != nil {
+	if err := app.Run(ctx, os.Stdin, os.Stdout, os.Getenv, os.Getwd, buildInfo); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "error: %s\n", err)
 		os.Exit(1)
 	}

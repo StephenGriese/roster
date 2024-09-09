@@ -87,6 +87,7 @@ func addRoutes(
 	buildInfo BuildInfo,
 ) {
 	mux.Handle("/roster", createGetRosterHandler(logger))
+	mux.Handle("/roster/players-for-team", createPlayersForTeamHandler(logger))
 	mux.Handle("/build-info", createGetBuildInfoHandler(logger, buildInfo))
 	mux.Handle("/*", http.FileServer(http.Dir("./web/static/")))
 }
@@ -104,11 +105,12 @@ func createGetBuildInfoHandler(logger *slog.Logger, buildInfo BuildInfo) http.Ha
 }
 
 func createGetRosterHandler(logger *slog.Logger) http.Handler {
+	logger.Info("creating get roster handler")
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			logger.Info("Getting roster")
 			ps := nhle.NewPlayerService()
-			players, err := ps.Players()
+			players, err := ps.Players("PHI")
 			if err != nil {
 				http.Error(w, "Error", http.StatusInternalServerError)
 				return
@@ -116,7 +118,7 @@ func createGetRosterHandler(logger *slog.Logger) http.Handler {
 			sort.Slice(players, func(i, j int) bool {
 				return players[i].SweaterNumber < players[j].SweaterNumber
 			})
-			err = Page(Table(players)).Render(w)
+			err = Page(TeamSelect(), Table(players)).Render(w)
 			if err != nil {
 				logger.Error("Error rendering view", "error", err)
 				http.Error(w, "Error", http.StatusInternalServerError)
@@ -124,18 +126,91 @@ func createGetRosterHandler(logger *slog.Logger) http.Handler {
 		})
 }
 
-func Page(body g.Node) g.Node {
+func createPlayersForTeamHandler(logger *slog.Logger) http.Handler {
+	logger.Info("creating players for team handler")
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			logger.Info("playersForTeam")
+			err := r.ParseForm()
+			if err != nil {
+				http.Error(w, "Error", http.StatusInternalServerError)
+				return
+			}
+			team := r.FormValue("team")
+			ps := nhle.NewPlayerService()
+			players, err := ps.Players(team)
+			if err != nil {
+				http.Error(w, "Error", http.StatusInternalServerError)
+				return
+			}
+			sort.Slice(players, func(i, j int) bool {
+				return players[i].SweaterNumber < players[j].SweaterNumber
+			})
+
+			err = Table(players).Render(w)
+			if err != nil {
+				logger.Error("Error rendering view", "error", err)
+				http.Error(w, "Error", http.StatusInternalServerError)
+			}
+		})
+}
+
+func Page(nodes ...g.Node) g.Node {
 	return c.HTML5(c.HTML5Props{
 		Title:    "Roster",
 		Language: "en",
 		Head: []g.Node{
 			h.Script(h.Src("/js/htmx-1.9.11.js")),
 		},
-		Body: []g.Node{
-			Container(
-				Prose(body)),
-		},
+		Body: nodes,
 	})
+}
+
+func Table(players []roster.Player) g.Node {
+	return h.Table(
+		h.ID("player-table"),
+		h.THead(
+			h.Tr(
+				h.Th(g.Text("Number")),
+				h.Th(g.Text("LastName")),
+				h.Th(g.Text("FirstName")),
+				h.Th(g.Text("Position")),
+			),
+		),
+		TableBody(players),
+	)
+}
+
+func TableBody(players []roster.Player) g.Node {
+	return h.TBody(
+		g.Group(g.Map(players, func(p roster.Player) g.Node {
+			return h.Tr(
+				h.Td(g.Text(strconv.Itoa(p.SweaterNumber))),
+				h.Td(g.Text(p.LastName)),
+				h.Td(g.Text(p.FirstName)),
+				h.Td(g.Text(p.Position.String())))
+		})),
+	)
+}
+
+func TeamSelect() g.Node {
+
+	l := h.Label(
+		g.Text("Team"),
+		h.For("team-select"),
+	)
+
+	br := h.Br()
+
+	s := h.Select(
+		g.Attr("hx-put", "/roster/players-for-team"),
+		g.Attr("hx-target", "#player-table"),
+		h.Name("team"),
+		h.ID("team-select"),
+		h.Option(h.Value("PHI"), g.Text("flyers")),
+		h.Option(h.Value("PIT"), g.Text("penguins")),
+	)
+	return g.Group([]g.Node{l, br, s})
 }
 
 func BuildInfoContent(info BuildInfo) g.Node {
@@ -149,34 +224,4 @@ func BuildInfoContent(info BuildInfo) g.Node {
 		h.Dt(g.Text("Version")),
 		h.Dd(g.Text(info.Version)),
 	)
-}
-
-func Table(players []roster.Player) g.Node {
-	return h.Table(
-		h.THead(
-			h.Tr(
-				h.Th(g.Text("Number")),
-				h.Th(g.Text("LastName")),
-				h.Th(g.Text("FirstName")),
-				h.Th(g.Text("Position")),
-			),
-		),
-		h.TBody(
-			g.Group(g.Map(players, func(p roster.Player) g.Node {
-				return h.Tr(
-					h.Td(g.Text(strconv.Itoa(p.SweaterNumber))),
-					h.Td(g.Text(p.LastName)),
-					h.Td(g.Text(p.FirstName)),
-					h.Td(g.Text(p.Position.String())))
-			})),
-		),
-	)
-}
-
-func Container(children ...g.Node) g.Node {
-	return h.Div(g.Group(children))
-}
-
-func Prose(children ...g.Node) g.Node {
-	return h.Div(g.Group(children))
 }
