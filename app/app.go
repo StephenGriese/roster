@@ -10,15 +10,10 @@ import (
 	"os"
 	"os/signal"
 	"sort"
-	"strconv"
 	"sync"
 	"time"
 
 	"github.com/StephenGriese/roster/nhle"
-	"github.com/StephenGriese/roster/roster"
-	g "github.com/maragudk/gomponents"
-	c "github.com/maragudk/gomponents/components"
-	h "github.com/maragudk/gomponents/html"
 )
 
 type BuildInfo struct {
@@ -40,6 +35,7 @@ func Run(
 	defer cancel()
 
 	logger := slog.New(slog.NewJSONHandler(stdout, nil))
+
 	wd, _ := getwd()
 	logger.Info("Starting server", "working dir", wd)
 	logger.Info("Build info", "builder", buildInfo.Builder, "buildTime", buildInfo.BuildTime, "goversion", buildInfo.Goversion, "version", buildInfo.Version)
@@ -49,16 +45,15 @@ func Run(
 		return errors.New("missing PORT environment variable")
 	}
 
-	mux := http.NewServeMux()
-	addRoutes(mux, logger, buildInfo)
-	server := http.Server{
+	srv := NewServer(logger, buildInfo)
+	httpServer := &http.Server{
 		Addr:    addr,
-		Handler: mux,
+		Handler: srv,
 	}
 
 	go func() {
-		logger.Info("starting http server", "addr", server.Addr)
-		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		logger.Info("starting http server", "addr", httpServer.Addr)
+		if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logger.Warn("error starting http server", "error", err)
 		}
 	}()
@@ -73,7 +68,7 @@ func Run(
 		shutdownCtx := context.Background()
 		shutdownCtx, cancel := context.WithTimeout(shutdownCtx, 10*time.Second)
 		defer cancel()
-		if err := server.Shutdown(shutdownCtx); err != nil {
+		if err := httpServer.Shutdown(shutdownCtx); err != nil {
 			logger.Warn("error shutting down http server", "error", err)
 		}
 	}()
@@ -81,20 +76,22 @@ func Run(
 	return nil
 }
 
-func addRoutes(
-	mux *http.ServeMux,
+func NewServer(
 	logger *slog.Logger,
 	buildInfo BuildInfo,
-) {
-	mux.Handle("/roster", createGetRosterHandler(logger))
-	mux.Handle("/roster/players-for-team", createPlayersForTeamHandler(logger))
-	mux.Handle("/build-info", createGetBuildInfoHandler(logger, buildInfo))
-	mux.Handle("/*", http.FileServer(http.Dir("./web/static/")))
+) http.Handler {
+	mux := http.NewServeMux()
+	addRoutes(
+		mux,
+		logger,
+		buildInfo,
+	)
+	return mux
 }
 
 func createGetBuildInfoHandler(logger *slog.Logger, buildInfo BuildInfo) http.Handler {
 	logger.Info("creating build info handler")
-	return http.HandlerFunc(
+	return http.HandlerFunc( // This is a plain old Go type conversion. T(v) converts the value v to the type T.
 		func(w http.ResponseWriter, r *http.Request) {
 			logger.Info("Getting build info")
 			err := Page(BuildInfoContent(buildInfo)).Render(w)
@@ -153,75 +150,4 @@ func createPlayersForTeamHandler(logger *slog.Logger) http.Handler {
 				http.Error(w, "Error", http.StatusInternalServerError)
 			}
 		})
-}
-
-func Page(nodes ...g.Node) g.Node {
-	return c.HTML5(c.HTML5Props{
-		Title:    "Roster",
-		Language: "en",
-		Head: []g.Node{
-			h.Script(h.Src("/js/htmx-1.9.11.js")),
-		},
-		Body: nodes,
-	})
-}
-
-func Table(players []roster.Player) g.Node {
-	return h.Table(
-		h.ID("player-table"),
-		h.THead(
-			h.Tr(
-				h.Th(g.Text("Number")),
-				h.Th(g.Text("LastName")),
-				h.Th(g.Text("FirstName")),
-				h.Th(g.Text("Position")),
-			),
-		),
-		TableBody(players),
-	)
-}
-
-func TableBody(players []roster.Player) g.Node {
-	return h.TBody(
-		g.Group(g.Map(players, func(p roster.Player) g.Node {
-			return h.Tr(
-				h.Td(g.Text(strconv.Itoa(p.SweaterNumber))),
-				h.Td(g.Text(p.LastName)),
-				h.Td(g.Text(p.FirstName)),
-				h.Td(g.Text(p.Position.String())))
-		})),
-	)
-}
-
-func TeamSelect() g.Node {
-
-	l := h.Label(
-		g.Text("Team"),
-		h.For("team-select"),
-	)
-
-	br := h.Br()
-
-	s := h.Select(
-		g.Attr("hx-get", "/roster/players-for-team"),
-		g.Attr("hx-target", "#player-table"),
-		h.Name("team"),
-		h.ID("team-select"),
-		h.Option(h.Value("PHI"), g.Text("flyers")),
-		h.Option(h.Value("PIT"), g.Text("penguins")),
-	)
-	return g.Group([]g.Node{l, br, s})
-}
-
-func BuildInfoContent(info BuildInfo) g.Node {
-	return h.Dl(
-		h.Dt(g.Text("Builder")),
-		h.Dd(g.Text(info.Builder)),
-		h.Dt(g.Text("BuildTime")),
-		h.Dd(g.Text(info.BuildTime)),
-		h.Dt(g.Text("Goversion")),
-		h.Dd(g.Text(info.Goversion)),
-		h.Dt(g.Text("Version")),
-		h.Dd(g.Text(info.Version)),
-	)
 }
