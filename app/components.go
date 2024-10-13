@@ -15,6 +15,7 @@ func Page(nodes ...g.Node) g.Node {
 		Language: "en",
 		Head: []g.Node{
 			h.Script(h.Src("/js/htmx-1.9.11.js")),
+			h.Link(h.Rel("stylesheet"), h.Href("https://cdn.simplecss.org/simple.min.css")),
 		},
 		Body: nodes,
 	})
