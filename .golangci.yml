@@ -16,17 +16,6 @@ linters:
   #enable-all: true
 
   disable:
-  # Disable all deprecated linters
-    - maligned
-    - scopelint
-    - structcheck
-    - ifshort
-    - exhaustivestruct
-    - nosnakecase
-    - deadcode
-    - varcheck
-    - golint
-    - interfacer
   # Disable problematic linters
     - depguard
     - funlen # Function length

@@ -1,6 +1,6 @@
 module github.com/StephenGriese/roster
 
-go 1.22
+go 1.23
 
 require (
 	github.com/maragudk/gomponents v0.20.4
