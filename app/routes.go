@@ -13,5 +13,5 @@ func addRoutes(
 	mux.Handle("/roster", createGetRosterHandler(logger))
 	mux.Handle("/roster/players-for-team", createPlayersForTeamHandler(logger))
 	mux.Handle("/build-info", createGetBuildInfoHandler(logger, buildInfo))
-	mux.Handle("/*", http.FileServer(http.Dir("./web/static/")))
+	mux.Handle("/", http.FileServer(http.Dir("./web/static/")))
 }

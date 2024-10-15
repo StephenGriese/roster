@@ -1,6 +1,7 @@
 package app
 
 import (
+	"os"
 	"strconv"
 
 	"github.com/StephenGriese/roster/roster"
@@ -70,7 +71,10 @@ func TeamSelect() g.Node {
 }
 
 func BuildInfoContent(info BuildInfo) g.Node {
+
+	wd, _ := os.Getwd()
 	return h.Dl(
+		h.Dt(g.Text(wd)),
 		h.Dt(g.Text("Builder")),
 		h.Dd(g.Text(info.Builder)),
 		h.Dt(g.Text("BuildTime")),
