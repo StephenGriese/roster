@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/StephenGriese/roster/app"
+	"github.com/StephenGriese/roster/server"
 )
 
 var (
@@ -18,14 +18,14 @@ var (
 func main() {
 	ctx := context.Background()
 
-	buildInfo := app.BuildInfo{
+	buildInfo := server.BuildInfo{
 		Builder:   builder,
 		BuildTime: buildTime,
 		Goversion: goversion,
 		Version:   version,
 	}
 
-	if err := app.Run(ctx, os.Stdin, os.Stdout, os.Getenv, os.Getwd, buildInfo); err != nil {
+	if err := server.Run(ctx, os.Stdin, os.Stdout, os.Getenv, os.Getwd, buildInfo); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "error: %s\n", err)
 		os.Exit(1)
 	}

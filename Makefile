@@ -27,6 +27,7 @@ test:
 target/local: modules
 	mkdir -p target/bin && go build -ldflags "$(LDFLAGS)" -o target/bin/roster ./cmd/roster
 
+
 modules:
 	go mod tidy
 
