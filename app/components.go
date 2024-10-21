@@ -15,8 +15,10 @@ func Page(nodes ...g.Node) g.Node {
 		Title:    "Roster",
 		Language: "en",
 		Head: []g.Node{
+			h.Meta(h.Charset("utf-8")),
+			h.Meta(h.Name("viewport"), h.Content("width=device-width, initial-scale=1")),
 			h.Script(h.Src("/js/htmx-1.9.11.js")),
-			h.Link(h.Rel("stylesheet"), h.Href("https://cdn.simplecss.org/simple.css")),
+			h.Link(h.Rel("stylesheet"), h.Href("https://cdn.simplecss.org/simple.min.css")),
 		},
 		Body: nodes,
 	})
@@ -28,10 +30,10 @@ func Table(players []roster.Player) g.Node {
 		h.ID("player-table"),
 		h.THead(
 			h.Tr(
-				h.Th(h.Style("width: 25%"), g.Text("Number")),
-				h.Th(h.Style("width: 25%"), g.Text("LastName")),
-				h.Th(h.Style("width: 25%"), g.Text("FirstName")),
-				h.Th(h.Style("width: 25%"), g.Text("Position")),
+				h.Th(h.Style("width: 15%"), g.Text("Number")),
+				h.Th(h.Style("width: 35%"), g.Text("LastName")),
+				h.Th(h.Style("width: 35%"), g.Text("FirstName")),
+				h.Th(h.Style("width: 15%"), g.Text("Position")),
 			),
 		),
 		TableBody(players),
