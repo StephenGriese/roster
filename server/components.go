@@ -66,11 +66,70 @@ func TeamSelect() g.Node {
 		g.Attr("hx-target", "#player-table"),
 		h.Name("team"),
 		h.ID("team-select"),
+		h.OptGroup(h.Label(g.Text("Metropolitan")), MetropolitanOptGroup()),
+		h.OptGroup(h.Label(g.Text("Atlantic")), AtlanticOptGroup()),
+		h.OptGroup(h.Label(g.Text("Central")), CentralOptGroup()),
+		h.OptGroup(h.Label(g.Text("Pacific")), PacificOptGroup()),
 		h.Option(h.Value("PHI"), g.Text("flyers")),
 		h.Option(h.Value("PIT"), g.Text("penguins")),
 		h.Option(h.Value("CAR"), g.Text("hurricanes")),
 	)
 	return g.Group([]g.Node{l, br, s})
+}
+
+func AtlanticOptGroup() g.Node {
+	return h.OptGroup(
+		h.Label(g.Text("Atlantic")),
+		h.Option(h.Value("BOS"), g.Text("bruins")),
+		h.Option(h.Value("BUF"), g.Text("sabres")),
+		h.Option(h.Value("DET"), g.Text("red wings")),
+		h.Option(h.Value("FLA"), g.Text("panthers")),
+		h.Option(h.Value("MTL"), g.Text("canadiens")),
+		h.Option(h.Value("OTT"), g.Text("senators")),
+		h.Option(h.Value("TBL"), g.Text("lightning")),
+		h.Option(h.Value("TOR"), g.Text("maple leafs")),
+	)
+}
+
+func MetropolitanOptGroup() g.Node {
+	return h.OptGroup(
+		h.Label(g.Text("Metropolitan")),
+		h.Option(h.Value("CAR"), g.Text("hurricanes")),
+		h.Option(h.Value("CBJ"), g.Text("blue jackets")),
+		h.Option(h.Value("NJD"), g.Text("devils")),
+		h.Option(h.Value("NYI"), g.Text("islanders")),
+		h.Option(h.Value("NYR"), g.Text("rangers")),
+		h.Option(h.Value("PHI"), g.Text("flyers")),
+		h.Option(h.Value("PIT"), g.Text("penguins")),
+		h.Option(h.Value("WSH"), g.Text("capitals")),
+	)
+}
+
+func CentralOptGroup() g.Node {
+	return h.OptGroup(
+		h.Label(g.Text("Central")),
+		h.Option(h.Value("CHI"), g.Text("blackhawks")),
+		h.Option(h.Value("COL"), g.Text("avalanche")),
+		h.Option(h.Value("DAL"), g.Text("stars")),
+		h.Option(h.Value("MIN"), g.Text("wild")),
+		h.Option(h.Value("NSH"), g.Text("predators")),
+		h.Option(h.Value("STL"), g.Text("blues")),
+		h.Option(h.Value("WPG"), g.Text("jets")),
+	)
+}
+
+func PacificOptGroup() g.Node {
+	return h.OptGroup(
+		h.Label(g.Text("Pacific")),
+		h.Option(h.Value("ANA"), g.Text("ducks")),
+		h.Option(h.Value("ARI"), g.Text("coyotes")),
+		h.Option(h.Value("CGY"), g.Text("flames")),
+		h.Option(h.Value("EDM"), g.Text("oilers")),
+		h.Option(h.Value("LAK"), g.Text("kings")),
+		h.Option(h.Value("SJS"), g.Text("sharks")),
+		h.Option(h.Value("SEA"), g.Text("kraken")),
+		h.Option(h.Value("VAN"), g.Text("canucks")),
+	)
 }
 
 func BuildInfoContent(info BuildInfo) g.Node {
