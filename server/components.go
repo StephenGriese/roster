@@ -68,6 +68,7 @@ func TeamSelect() g.Node {
 		h.ID("team-select"),
 		h.Option(h.Value("PHI"), g.Text("flyers")),
 		h.Option(h.Value("PIT"), g.Text("penguins")),
+		h.Option(h.Value("CAR"), g.Text("hurricanes")),
 	)
 	return g.Group([]g.Node{l, br, s})
 }

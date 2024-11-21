@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"sort"
 
 	"github.com/StephenGriese/roster/nhle"
@@ -18,6 +19,6 @@ func main() {
 	})
 
 	for _, p := range roster {
-		fmt.Printf("%2d  %s %s\n", p.SweaterNumber, p.FirstName, p.LastName)
+		_, _ = fmt.Fprintf(os.Stdout, "%2d  %s %s\n", p.SweaterNumber, p.FirstName, p.LastName)
 	}
 }
