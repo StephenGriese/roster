@@ -66,20 +66,17 @@ func TeamSelect() g.Node {
 		g.Attr("hx-target", "#player-table"),
 		h.Name("team"),
 		h.ID("team-select"),
-		h.OptGroup(h.Label(g.Text("Metropolitan")), MetropolitanOptGroup()),
-		h.OptGroup(h.Label(g.Text("Atlantic")), AtlanticOptGroup()),
-		h.OptGroup(h.Label(g.Text("Central")), CentralOptGroup()),
-		h.OptGroup(h.Label(g.Text("Pacific")), PacificOptGroup()),
-		h.Option(h.Value("PHI"), g.Text("flyers")),
-		h.Option(h.Value("PIT"), g.Text("penguins")),
-		h.Option(h.Value("CAR"), g.Text("hurricanes")),
+		MetropolitanOptGroup(),
+		AtlanticOptGroup(),
+		CentralOptGroup(),
+		PacificOptGroup(),
 	)
 	return g.Group([]g.Node{l, br, s})
 }
 
 func AtlanticOptGroup() g.Node {
 	return h.OptGroup(
-		h.Label(g.Text("Atlantic")),
+		h.LabelAttr("Atlantic"),
 		h.Option(h.Value("BOS"), g.Text("bruins")),
 		h.Option(h.Value("BUF"), g.Text("sabres")),
 		h.Option(h.Value("DET"), g.Text("red wings")),
@@ -93,13 +90,13 @@ func AtlanticOptGroup() g.Node {
 
 func MetropolitanOptGroup() g.Node {
 	return h.OptGroup(
-		h.Label(g.Text("Metropolitan")),
+		h.LabelAttr("Metropolitan"),
 		h.Option(h.Value("CAR"), g.Text("hurricanes")),
 		h.Option(h.Value("CBJ"), g.Text("blue jackets")),
 		h.Option(h.Value("NJD"), g.Text("devils")),
 		h.Option(h.Value("NYI"), g.Text("islanders")),
 		h.Option(h.Value("NYR"), g.Text("rangers")),
-		h.Option(h.Value("PHI"), g.Text("flyers")),
+		h.Option(h.Value("PHI"), g.Text("flyers"), h.Selected()),
 		h.Option(h.Value("PIT"), g.Text("penguins")),
 		h.Option(h.Value("WSH"), g.Text("capitals")),
 	)
@@ -107,7 +104,7 @@ func MetropolitanOptGroup() g.Node {
 
 func CentralOptGroup() g.Node {
 	return h.OptGroup(
-		h.Label(g.Text("Central")),
+		h.LabelAttr("Central"),
 		h.Option(h.Value("CHI"), g.Text("blackhawks")),
 		h.Option(h.Value("COL"), g.Text("avalanche")),
 		h.Option(h.Value("DAL"), g.Text("stars")),
@@ -120,7 +117,7 @@ func CentralOptGroup() g.Node {
 
 func PacificOptGroup() g.Node {
 	return h.OptGroup(
-		h.Label(g.Text("Pacific")),
+		h.LabelAttr("Pacific"),
 		h.Option(h.Value("ANA"), g.Text("ducks")),
 		h.Option(h.Value("ARI"), g.Text("coyotes")),
 		h.Option(h.Value("CGY"), g.Text("flames")),
