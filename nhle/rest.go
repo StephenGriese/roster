@@ -50,19 +50,23 @@ func (ps PlayerService) Players(team string) ([]roster.Player, error) {
 	}
 
 	type Player struct {
-		ID            int  `json:"id"`
-		FirstName     Name `json:"firstName"`
-		LastName      Name `json:"lastName"`
-		SweaterNumber int  `json:"sweaterNumber"`
+		ID             int  `json:"id"`
+		FirstName      Name `json:"firstName"`
+		LastName       Name `json:"lastName"`
+		SweaterNumber  int  `json:"sweaterNumber"`
+		HeightInInches int  `json:"heightInInches"`
+		WeightInPounds int  `json:"weightInPounds"`
 	}
 
 	toRosterPlayer := func(p Player, position roster.Position) roster.Player {
 		return roster.Player{
-			ID:            p.ID,
-			FirstName:     p.FirstName.Default,
-			LastName:      p.LastName.Default,
-			SweaterNumber: p.SweaterNumber,
-			Position:      position,
+			ID:             p.ID,
+			FirstName:      p.FirstName.Default,
+			LastName:       p.LastName.Default,
+			SweaterNumber:  p.SweaterNumber,
+			Position:       position,
+			HeightInInches: p.HeightInInches,
+			WeightInPounds: p.WeightInPounds,
 		}
 	}
 

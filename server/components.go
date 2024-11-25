@@ -34,6 +34,8 @@ func Table(players []roster.Player) g.Node {
 				h.Th(h.Style("width: 35%"), g.Text("LastName")),
 				h.Th(h.Style("width: 35%"), g.Text("FirstName")),
 				h.Th(h.Style("width: 15%"), g.Text("Position")),
+				h.Th(h.Style("width: 15%"), g.Text("Height")),
+				h.Th(h.Style("width: 15%"), g.Text("Weight")),
 			),
 		),
 		TableBody(players),
@@ -43,11 +45,15 @@ func Table(players []roster.Player) g.Node {
 func TableBody(players []roster.Player) g.Node {
 	return h.TBody(
 		g.Group(g.Map(players, func(p roster.Player) g.Node {
+			s := roster.FeetAndInchesToString(p.HeightInFeetAndInches())
 			return h.Tr(
 				h.Td(g.Text(strconv.Itoa(p.SweaterNumber))),
 				h.Td(g.Text(p.LastName)),
 				h.Td(g.Text(p.FirstName)),
-				h.Td(g.Text(p.Position.String())))
+				h.Td(g.Text(p.Position.String())),
+				h.Td(g.Text(s)),
+				h.Td(g.Text(strconv.Itoa(p.WeightInPounds))),
+			)
 		})),
 	)
 }
