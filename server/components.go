@@ -117,6 +117,7 @@ func CentralOptGroup() g.Node {
 		h.Option(h.Value("MIN"), g.Text("wild")),
 		h.Option(h.Value("NSH"), g.Text("predators")),
 		h.Option(h.Value("STL"), g.Text("blues")),
+		h.Option(h.Value("UTA"), g.Text("utah hockey club")),
 		h.Option(h.Value("WPG"), g.Text("jets")),
 	)
 }
@@ -125,13 +126,13 @@ func PacificOptGroup() g.Node {
 	return h.OptGroup(
 		h.LabelAttr("Pacific"),
 		h.Option(h.Value("ANA"), g.Text("ducks")),
-		h.Option(h.Value("ARI"), g.Text("coyotes")),
 		h.Option(h.Value("CGY"), g.Text("flames")),
 		h.Option(h.Value("EDM"), g.Text("oilers")),
 		h.Option(h.Value("LAK"), g.Text("kings")),
 		h.Option(h.Value("SJS"), g.Text("sharks")),
 		h.Option(h.Value("SEA"), g.Text("kraken")),
 		h.Option(h.Value("VAN"), g.Text("canucks")),
+		h.Option(h.Value("VGK"), g.Text("golden knights")),
 	)
 }
 
