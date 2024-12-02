@@ -1,12 +1,13 @@
 package server
 
 import (
+	"os"
+	"strconv"
+
 	"github.com/StephenGriese/roster/roster"
 	g "github.com/maragudk/gomponents"
 	c "github.com/maragudk/gomponents/components"
 	h "github.com/maragudk/gomponents/html"
-	"os"
-	"strconv"
 )
 
 func Page(nodes ...g.Node) g.Node {
