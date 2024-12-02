@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/StephenGriese/roster/roster"
 	"io"
 	"log/slog"
 	"net/http"
@@ -115,7 +116,7 @@ func createGetRosterHandler(logger *slog.Logger) http.Handler {
 			sort.Slice(players, func(i, j int) bool {
 				return players[i].SweaterNumber < players[j].SweaterNumber
 			})
-			err = Page(TeamSelect(), Table(players)).Render(w)
+			err = Page(Form(), Table(players)).Render(w)
 			if err != nil {
 				logger.Error("Error rendering view", "error", err)
 				http.Error(w, "Error", http.StatusInternalServerError)
@@ -134,15 +135,16 @@ func createPlayersForTeamHandler(logger *slog.Logger) http.Handler {
 				return
 			}
 			team := r.FormValue("team")
+			sortBy := r.FormValue("sort")
+			logger.Info("formValues", "team", team, "sortBy", sortBy)
 			ps := nhle.NewPlayerService()
 			players, err := ps.Players(team)
 			if err != nil {
 				http.Error(w, "Error", http.StatusInternalServerError)
 				return
 			}
-			sort.Slice(players, func(i, j int) bool {
-				return players[i].SweaterNumber < players[j].SweaterNumber
-			})
+
+			sort.Slice(players, makeSortFunc(players, sortBy))
 
 			err = TableBody(players).Render(w)
 			if err != nil {
@@ -150,4 +152,51 @@ func createPlayersForTeamHandler(logger *slog.Logger) http.Handler {
 				http.Error(w, "Error", http.StatusInternalServerError)
 			}
 		})
+}
+
+func makeSortFunc(players []roster.Player, sortBy string) func(i, j int) bool {
+	switch sortBy {
+	case "number":
+		return func(i, j int) bool {
+			return players[i].SweaterNumber < players[j].SweaterNumber
+		}
+	case "name":
+		return func(i, j int) bool {
+			return players[i].FullName() < players[j].FullName()
+		}
+	case "position":
+		return func(i, j int) bool {
+			if players[i].Position == players[j].Position {
+				return players[i].FullName() < players[j].FullName()
+			}
+			return players[i].Position < players[j].Position
+		}
+	case "height":
+		return func(i, j int) bool {
+			if players[i].HeightInInches == players[j].HeightInInches {
+				return players[i].FullName() < players[j].FullName()
+			}
+			return players[i].HeightInInches < players[j].HeightInInches
+		}
+	case "weight":
+		return func(i, j int) bool {
+			if players[i].WeightInPounds == players[j].WeightInPounds {
+				return players[i].FullName() < players[j].FullName()
+			}
+			return players[i].WeightInPounds < players[j].WeightInPounds
+		}
+	case "age":
+		return func(i, j int) bool {
+			iAge := players[i].Age()
+			jAge := players[j].Age()
+			if iAge == jAge {
+				return players[i].FullName() < players[j].FullName()
+			}
+			return iAge < jAge
+		}
+	default:
+		return func(i, j int) bool {
+			return players[i].SweaterNumber < players[j].SweaterNumber
+		}
+	}
 }

@@ -1,13 +1,12 @@
 package server
 
 import (
-	"os"
-	"strconv"
-
 	"github.com/StephenGriese/roster/roster"
 	g "github.com/maragudk/gomponents"
 	c "github.com/maragudk/gomponents/components"
 	h "github.com/maragudk/gomponents/html"
+	"os"
+	"strconv"
 )
 
 func Page(nodes ...g.Node) g.Node {
@@ -22,38 +21,63 @@ func Page(nodes ...g.Node) g.Node {
 	})
 }
 
-func Table(players []roster.Player) g.Node {
-	return h.Table(
-		h.Style("width: 100%"),
-		h.ID("player-table"),
-		h.THead(
-			h.Tr(
-				h.Th(h.Style("width: 10%"), g.Text("Number")),
-				h.Th(h.Style("width: 35%"), g.Text("Name")),
-				h.Th(h.Style("width: 15%"), g.Text("Position")),
-				h.Th(h.Style("width: 10%"), g.Text("Height")),
-				h.Th(h.Style("width: 10%"), g.Text("Weight")),
-				h.Th(h.Style("width: 10%"), g.Text("Age")),
-			),
-		),
-		TableBody(players),
+func Form() g.Node {
+	return h.Form(
+		g.Attr("hx-trigger", "change"),
+		g.Attr("hx-get", "/roster/players-for-team"),
+		g.Attr("hx-target", "#player-table-body"),
+		g.Attr("hx-swap", "outerHTML"),
+		TeamSelect(),
+		SortChoice(),
 	)
 }
 
-func TableBody(players []roster.Player) g.Node {
-	return h.TBody(
-		h.ID("player-table-body"),
-		g.Group(g.Map(players, func(p roster.Player) g.Node {
-			s := roster.FeetAndInchesToString(p.HeightInFeetAndInches())
-			return h.Tr(
-				h.Td(g.Text(strconv.Itoa(p.SweaterNumber))),
-				h.Td(g.Text(p.FullName())),
-				h.Td(g.Text(p.Position.String())),
-				h.Td(g.Text(s)),
-				h.Td(g.Text(strconv.Itoa(p.WeightInPounds))),
-				h.Td(g.Text(strconv.Itoa(p.Age()))),
-			)
-		})),
+func SortChoice() g.Node {
+	return h.FieldSet(
+		h.Legend(g.Text("Sort by")),
+		h.Input(
+			h.Type("radio"),
+			h.ID("number"),
+			h.Name("sort"),
+			h.Value("number"),
+			h.Checked(),
+		),
+		h.Label(h.For("number"), g.Text("Number")),
+		h.Input(
+			h.Type("radio"),
+			h.ID("name"),
+			h.Name("sort"),
+			h.Value("name"),
+		),
+		h.Label(h.For("name"), g.Text("Name")),
+		h.Input(
+			h.Type("radio"),
+			h.ID("position"),
+			h.Name("sort"),
+			h.Value("position"),
+		),
+		h.Label(h.For("position"), g.Text("Position")),
+		h.Input(
+			h.Type("radio"),
+			h.ID("height"),
+			h.Name("sort"),
+			h.Value("height"),
+		),
+		h.Label(h.For("height"), g.Text("Height")),
+		h.Input(
+			h.Type("radio"),
+			h.ID("weight"),
+			h.Name("sort"),
+			h.Value("weight"),
+		),
+		h.Label(h.For("weight"), g.Text("Weight")),
+		h.Input(
+			h.Type("radio"),
+			h.ID("age"),
+			h.Name("sort"),
+			h.Value("age"),
+		),
+		h.Label(h.For("age"), g.Text("Age")),
 	)
 }
 
@@ -64,12 +88,10 @@ func TeamSelect() g.Node {
 		h.For("team-select"),
 	)
 
-	br := h.Br()
-
 	s := h.Select(
-		g.Attr("hx-get", "/roster/players-for-team"),
-		g.Attr("hx-target", "#player-table-body"),
-		g.Attr("hx-swap", "outerHTML"),
+		// g.Attr("hx-get", "/roster/players-for-team"),
+		// g.Attr("hx-target", "#player-table-body"),
+		// g.Attr("hx-swap", "outerHTML"),
 		h.Name("team"),
 		h.ID("team-select"),
 		MetropolitanOptGroup(),
@@ -77,7 +99,7 @@ func TeamSelect() g.Node {
 		CentralOptGroup(),
 		PacificOptGroup(),
 	)
-	return g.Group([]g.Node{l, br, s})
+	return g.Group([]g.Node{l, s})
 }
 
 func AtlanticOptGroup() g.Node {
@@ -133,6 +155,41 @@ func PacificOptGroup() g.Node {
 		h.Option(h.Value("SEA"), g.Text("kraken")),
 		h.Option(h.Value("VAN"), g.Text("canucks")),
 		h.Option(h.Value("VGK"), g.Text("golden knights")),
+	)
+}
+
+func Table(players []roster.Player) g.Node {
+	return h.Table(
+		h.Style("width: 100%"),
+		h.ID("player-table"),
+		h.THead(
+			h.Tr(
+				h.Th(h.Style("width: 10%"), g.Text("Number")),
+				h.Th(h.Style("width: 35%"), g.Text("Name")),
+				h.Th(h.Style("width: 15%"), g.Text("Position")),
+				h.Th(h.Style("width: 10%"), g.Text("Height")),
+				h.Th(h.Style("width: 10%"), g.Text("Weight")),
+				h.Th(h.Style("width: 10%"), g.Text("Age")),
+			),
+		),
+		TableBody(players),
+	)
+}
+
+func TableBody(players []roster.Player) g.Node {
+	return h.TBody(
+		h.ID("player-table-body"),
+		g.Group(g.Map(players, func(p roster.Player) g.Node {
+			s := roster.FeetAndInchesToString(p.HeightInFeetAndInches())
+			return h.Tr(
+				h.Td(g.Text(strconv.Itoa(p.SweaterNumber))),
+				h.Td(g.Text(p.FullName())),
+				h.Td(g.Text(p.Position.String())),
+				h.Td(g.Text(s)),
+				h.Td(g.Text(strconv.Itoa(p.WeightInPounds))),
+				h.Td(g.Text(strconv.Itoa(p.Age()))),
+			)
+		})),
 	)
 }
 
