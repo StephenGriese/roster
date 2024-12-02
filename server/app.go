@@ -144,7 +144,7 @@ func createPlayersForTeamHandler(logger *slog.Logger) http.Handler {
 				return players[i].SweaterNumber < players[j].SweaterNumber
 			})
 
-			err = Table(players).Render(w)
+			err = TableBody(players).Render(w)
 			if err != nil {
 				logger.Error("Error rendering view", "error", err)
 				http.Error(w, "Error", http.StatusInternalServerError)

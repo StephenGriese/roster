@@ -42,6 +42,7 @@ func Table(players []roster.Player) g.Node {
 
 func TableBody(players []roster.Player) g.Node {
 	return h.TBody(
+		h.ID("player-table-body"),
 		g.Group(g.Map(players, func(p roster.Player) g.Node {
 			s := roster.FeetAndInchesToString(p.HeightInFeetAndInches())
 			return h.Tr(
@@ -67,7 +68,8 @@ func TeamSelect() g.Node {
 
 	s := h.Select(
 		g.Attr("hx-get", "/roster/players-for-team"),
-		g.Attr("hx-target", "#player-table"),
+		g.Attr("hx-target", "#player-table-body"),
+		g.Attr("hx-swap", "outerHTML"),
 		h.Name("team"),
 		h.ID("team-select"),
 		MetropolitanOptGroup(),
