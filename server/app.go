@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/StephenGriese/roster/roster"
 	"io"
 	"log/slog"
 	"net/http"
@@ -13,6 +12,8 @@ import (
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/StephenGriese/roster/roster"
 
 	"github.com/StephenGriese/roster/nhle"
 )
@@ -98,6 +99,23 @@ func createGetBuildInfoHandler(logger *slog.Logger, buildInfo BuildInfo) http.Ha
 			err := Page(BuildInfoContent(buildInfo)).Render(w)
 			if err != nil {
 				http.Error(w, "Error", http.StatusInternalServerError)
+			}
+		})
+}
+
+// createRootHandler solves a special problem. The "/" pattern matches everything, so we need to check that we're at the root here.
+// The root handler will serve the roster page, while the file server will serve the static files.
+func createRootHandler(logger *slog.Logger, getRosterHandler, fileServer http.Handler) http.Handler {
+	logger.Info("creating root handler")
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			switch r.URL.Path {
+			case "/":
+				logger.Info("Root")
+				getRosterHandler.ServeHTTP(w, r)
+			default:
+				logger.Info("FileServer")
+				fileServer.ServeHTTP(w, r)
 			}
 		})
 }
