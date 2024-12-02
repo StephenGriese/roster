@@ -1,6 +1,9 @@
 package roster
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Position uint
 
@@ -24,13 +27,14 @@ func (p Position) String() string {
 }
 
 type Player struct {
-	ID             int      `json:"id"`
-	FirstName      string   `json:"firstName"`
-	LastName       string   `json:"lastName"`
-	SweaterNumber  int      `json:"sweaterNumber"`
-	Position       Position `json:"position"`
-	HeightInInches int      `json:"heightInInches"`
-	WeightInPounds int      `json:"weightInPounds"`
+	ID             int       `json:"id"`
+	FirstName      string    `json:"firstName"`
+	LastName       string    `json:"lastName"`
+	SweaterNumber  int       `json:"sweaterNumber"`
+	Position       Position  `json:"position"`
+	HeightInInches int       `json:"heightInInches"`
+	WeightInPounds int       `json:"weightInPounds"`
+	BirthDate      time.Time `json:"birthDate"`
 }
 
 func (p Player) HeightInFeetAndInches() (feet, inches int) {
@@ -41,4 +45,17 @@ func (p Player) HeightInFeetAndInches() (feet, inches int) {
 
 func FeetAndInchesToString(feet, inches int) string {
 	return fmt.Sprintf("%d'%d\"", feet, inches)
+}
+
+func (p Player) Age() int {
+	now := time.Now()
+	years := now.Year() - p.BirthDate.Year()
+	if now.YearDay() < p.BirthDate.YearDay() {
+		years--
+	}
+	return years
+}
+
+func (p Player) FullName() string {
+	return p.LastName + ", " + p.FirstName
 }

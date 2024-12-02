@@ -50,12 +50,13 @@ func (ps PlayerService) Players(team string) ([]roster.Player, error) {
 	}
 
 	type Player struct {
-		ID             int  `json:"id"`
-		FirstName      Name `json:"firstName"`
-		LastName       Name `json:"lastName"`
-		SweaterNumber  int  `json:"sweaterNumber"`
-		HeightInInches int  `json:"heightInInches"`
-		WeightInPounds int  `json:"weightInPounds"`
+		ID             int        `json:"id"`
+		FirstName      Name       `json:"firstName"`
+		LastName       Name       `json:"lastName"`
+		SweaterNumber  int        `json:"sweaterNumber"`
+		HeightInInches int        `json:"heightInInches"`
+		WeightInPounds int        `json:"weightInPounds"`
+		BirthDate      CustomTime `json:"birthDate"`
 	}
 
 	toRosterPlayer := func(p Player, position roster.Position) roster.Player {
@@ -67,6 +68,7 @@ func (ps PlayerService) Players(team string) ([]roster.Player, error) {
 			Position:       position,
 			HeightInInches: p.HeightInInches,
 			WeightInPounds: p.WeightInPounds,
+			BirthDate:      p.BirthDate.Time,
 		}
 	}
 

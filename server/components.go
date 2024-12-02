@@ -28,12 +28,12 @@ func Table(players []roster.Player) g.Node {
 		h.ID("player-table"),
 		h.THead(
 			h.Tr(
-				h.Th(h.Style("width: 15%"), g.Text("Number")),
-				h.Th(h.Style("width: 35%"), g.Text("LastName")),
-				h.Th(h.Style("width: 35%"), g.Text("FirstName")),
+				h.Th(h.Style("width: 10%"), g.Text("Number")),
+				h.Th(h.Style("width: 35%"), g.Text("Name")),
 				h.Th(h.Style("width: 15%"), g.Text("Position")),
-				h.Th(h.Style("width: 15%"), g.Text("Height")),
-				h.Th(h.Style("width: 15%"), g.Text("Weight")),
+				h.Th(h.Style("width: 10%"), g.Text("Height")),
+				h.Th(h.Style("width: 10%"), g.Text("Weight")),
+				h.Th(h.Style("width: 10%"), g.Text("Age")),
 			),
 		),
 		TableBody(players),
@@ -46,11 +46,11 @@ func TableBody(players []roster.Player) g.Node {
 			s := roster.FeetAndInchesToString(p.HeightInFeetAndInches())
 			return h.Tr(
 				h.Td(g.Text(strconv.Itoa(p.SweaterNumber))),
-				h.Td(g.Text(p.LastName)),
-				h.Td(g.Text(p.FirstName)),
+				h.Td(g.Text(p.FullName())),
 				h.Td(g.Text(p.Position.String())),
 				h.Td(g.Text(s)),
 				h.Td(g.Text(strconv.Itoa(p.WeightInPounds))),
+				h.Td(g.Text(strconv.Itoa(p.Age()))),
 			)
 		})),
 	)
