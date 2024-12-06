@@ -185,21 +185,21 @@ func makeSortFunc(players []roster.Player, sortBy string) func(i, j int) bool {
 	case "position":
 		return func(i, j int) bool {
 			if players[i].Position == players[j].Position {
-				return players[i].FullName() < players[j].FullName()
+				return players[i].SweaterNumber < players[j].SweaterNumber
 			}
 			return players[i].Position < players[j].Position
 		}
 	case "height":
 		return func(i, j int) bool {
 			if players[i].HeightInInches == players[j].HeightInInches {
-				return players[i].FullName() < players[j].FullName()
+				return players[i].SweaterNumber < players[j].SweaterNumber
 			}
 			return players[i].HeightInInches < players[j].HeightInInches
 		}
 	case "weight":
 		return func(i, j int) bool {
 			if players[i].WeightInPounds == players[j].WeightInPounds {
-				return players[i].FullName() < players[j].FullName()
+				return players[i].SweaterNumber < players[j].SweaterNumber
 			}
 			return players[i].WeightInPounds < players[j].WeightInPounds
 		}
@@ -208,7 +208,7 @@ func makeSortFunc(players []roster.Player, sortBy string) func(i, j int) bool {
 			iAge := players[i].Age()
 			jAge := players[j].Age()
 			if iAge == jAge {
-				return players[i].FullName() < players[j].FullName()
+				return players[i].SweaterNumber < players[j].SweaterNumber
 			}
 			return iAge < jAge
 		}
