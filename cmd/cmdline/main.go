@@ -10,7 +10,7 @@ import (
 
 func main() {
 	s := nhle.NewPlayerService()
-	roster, err := s.Players("PHI")
+	roster, err := s.Players("PHI", "current")
 	if err != nil {
 		panic(err)
 	}

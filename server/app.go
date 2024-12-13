@@ -126,7 +126,7 @@ func createGetRosterHandler(logger *slog.Logger) http.Handler {
 		func(w http.ResponseWriter, r *http.Request) {
 			logger.Info("Getting roster")
 			ps := nhle.NewPlayerService()
-			players, err := ps.Players("PHI")
+			players, err := ps.Players("PHI", "current")
 			if err != nil {
 				http.Error(w, "Error", http.StatusInternalServerError)
 				return
@@ -154,9 +154,10 @@ func createPlayersForTeamHandler(logger *slog.Logger) http.Handler {
 			}
 			team := r.FormValue("team")
 			sortBy := r.FormValue("sort")
-			logger.Info("formValues", "team", team, "sortBy", sortBy)
+			season := r.FormValue("season")
+			logger.Info("formValues", "team", team, "sortBy", sortBy, "season", season)
 			ps := nhle.NewPlayerService()
-			players, err := ps.Players(team)
+			players, err := ps.Players(team, season)
 			if err != nil {
 				http.Error(w, "Error", http.StatusInternalServerError)
 				return

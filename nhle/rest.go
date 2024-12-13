@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	BaseURLV1 = "https://api-web.nhle.com/v1/roster/%s/current"
+	BaseURLV1 = "https://api-web.nhle.com/v1/roster/%s"
 )
 
 func NewPlayerService() PlayerService {
@@ -28,8 +28,16 @@ type PlayerService struct {
 	httpClient *http.Client
 }
 
-func (ps PlayerService) Players(team string) ([]roster.Player, error) {
+func (ps PlayerService) Players(team, season string) ([]roster.Player, error) {
 	s := fmt.Sprintf(BaseURLV1, team)
+	switch season {
+	case "":
+		s += "/current"
+	case "current":
+		s += "/current"
+	default:
+		s += fmt.Sprintf("/%s", season)
+	}
 	req, err := http.NewRequest("GET", s, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
