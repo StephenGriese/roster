@@ -219,3 +219,17 @@ func makeSortFunc(players []roster.Player, sortBy string) func(i, j int) bool {
 		}
 	}
 }
+
+func loggingMiddleware(logger *slog.Logger, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Log the request
+		logger.Info(
+			"Got a request",
+			"method", r.Method,
+			"path", r.URL.Path,
+			"remoteAddr", r.RemoteAddr)
+
+		// Call the next handler in the chain
+		next.ServeHTTP(w, r)
+	})
+}

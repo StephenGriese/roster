@@ -13,9 +13,9 @@ func addRoutes(
 	{
 		getRosterHandler := createGetRosterHandler(logger)
 		fileServer := http.FileServer(http.Dir("./web/static/"))
-		mux.Handle("/", createRootHandler(logger, getRosterHandler, fileServer))
+		mux.Handle("/", loggingMiddleware(logger, createRootHandler(logger, getRosterHandler, fileServer)))
 	}
-	mux.Handle("/roster", createGetRosterHandler(logger))
-	mux.Handle("/roster/players-for-team", createPlayersForTeamHandler(logger))
-	mux.Handle("/build-info", createGetBuildInfoHandler(logger, buildInfo))
+	mux.Handle("/roster", loggingMiddleware(logger, createGetRosterHandler(logger)))
+	mux.Handle("/roster/players-for-team", loggingMiddleware(logger, createPlayersForTeamHandler(logger)))
+	mux.Handle("/build-info", loggingMiddleware(logger, createGetBuildInfoHandler(logger, buildInfo)))
 }
