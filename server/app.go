@@ -233,3 +233,14 @@ func loggingMiddleware(logger *slog.Logger, next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func printHeadersMiddleWare(logger *slog.Logger, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for key, values := range r.Header {
+			for _, value := range values {
+				logger.Info("Header", "key", key, "value", value)
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
+}
