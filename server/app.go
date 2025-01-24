@@ -234,13 +234,9 @@ func loggingMiddleware(logger *slog.Logger, next http.Handler) http.Handler {
 	})
 }
 
-func printHeadersMiddleWare(logger *slog.Logger, next http.Handler) http.Handler {
+func printXForwardedForMiddleWare(logger *slog.Logger, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		for key, values := range r.Header {
-			for _, value := range values {
-				logger.Info("Header", "key", key, "value", value)
-			}
-		}
+		logger.Info("X-Forwarded-For", "value", r.Header.Get("X-Forwarded-For"))
 		next.ServeHTTP(w, r)
 	})
 }
