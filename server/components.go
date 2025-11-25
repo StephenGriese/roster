@@ -23,15 +23,23 @@ func Page(nodes ...g.Node) g.Node {
 }
 
 func Form() g.Node {
-	return h.Form(
-		g.Attr("hx-trigger", "change"),
-		g.Attr("hx-get", "/roster/players-for-team"),
-		g.Attr("hx-target", "#player-table-body"),
-		g.Attr("hx-swap", "outerHTML"),
-		TeamSelect(),
-		SeasonSelect(),
-		SortChoice(),
-	)
+	return g.Group([]g.Node{
+		h.Nav(
+			h.A(h.Href("/roster"), g.Text("Team Roster")),
+			g.Text(" | "),
+			h.A(h.Href("/player-search"), g.Text("Player Career Search")),
+		),
+		h.H1(g.Text("Team Roster")),
+		h.Form(
+			g.Attr("hx-trigger", "change"),
+			g.Attr("hx-get", "/roster/players-for-team"),
+			g.Attr("hx-target", "#player-table-body"),
+			g.Attr("hx-swap", "outerHTML"),
+			TeamSelect(),
+			SeasonSelect(),
+			SortChoice(),
+		),
+	})
 }
 
 func SortChoice() g.Node {
@@ -258,4 +266,198 @@ func BuildInfoContent(info BuildInfo) g.Node {
 		h.Dt(g.Text("Version")),
 		h.Dd(g.Text(info.Version)),
 	)
+}
+
+func PlayerSearchForm() g.Node {
+	return g.Group([]g.Node{
+		h.Nav(
+			h.A(h.Href("/roster"), g.Text("Team Roster")),
+			g.Text(" | "),
+			h.A(h.Href("/player-search"), g.Text("Player Career Search")),
+		),
+		h.H1(g.Text("Player Career Search")),
+		h.P(g.Text("Enter a player name (or part of a name) to search for a player and view their career history.")),
+		h.Form(
+			g.Attr("hx-get", "/player-search/search"),
+			g.Attr("hx-target", "#search-results"),
+			g.Attr("hx-swap", "innerHTML"),
+			g.Attr("hx-trigger", "submit"),
+			h.Label(
+				h.For("query"),
+				g.Text("Player Name:"),
+			),
+			h.Input(
+				h.Type("text"),
+				h.Name("query"),
+				h.ID("query"),
+				h.Placeholder("e.g., Gretzky, Crosby, Ovechkin"),
+				g.Attr("autofocus", "true"),
+			),
+			h.Button(
+				h.Type("submit"),
+				g.Text("Search"),
+			),
+		),
+		h.Div(h.ID("search-results")),
+	})
+}
+
+func PlayerSearchResults(results []roster.PlayerSearchResult, message string) g.Node {
+	if message != "" {
+		return h.Div(
+			h.P(g.Text(message)),
+		)
+	}
+
+	if len(results) == 0 {
+		return h.Div(
+			h.P(g.Text("No players found. Try a different search.")),
+		)
+	}
+
+	return h.Div(
+		h.H2(g.Text("Search Results")),
+		h.P(g.Text("Click on a player to view their career history:")),
+		h.Ul(
+			g.Group(g.Map(results, func(p roster.PlayerSearchResult) g.Node {
+				status := "Inactive"
+				team := p.LastTeamAbbrev
+				if p.Active {
+					status = "Active"
+					team = p.TeamAbbrev
+				}
+				return h.Li(
+					h.A(
+						h.Href("#"),
+						g.Attr("hx-get", "/player-search/career"),
+						g.Attr("hx-vals", `{"playerId": "`+strconv.Itoa(p.PlayerID)+`"}`),
+						g.Attr("hx-target", "#search-results"),
+						g.Attr("hx-swap", "innerHTML"),
+						g.Text(p.Name),
+					),
+					g.Text(" - "+p.PositionCode+" - "+team+" ("+status+")"),
+				)
+			})),
+		),
+	)
+}
+
+func PlayerCareerView(career *roster.PlayerCareer) g.Node {
+	teams := career.GetUniqueTeams()
+
+	return h.Div(
+		h.Div(
+			h.A(
+				h.Href("/player-search"),
+				g.Text("← Back to Search"),
+			),
+		),
+		h.H2(g.Text("Career History: "+career.FullName())),
+		h.Div(
+			h.Strong(g.Text("Position: ")),
+			g.Text(career.Position),
+		),
+		h.Div(
+			h.Strong(g.Text("Career Games Played: ")),
+			g.Text(strconv.Itoa(career.CareerGamesPlayed)),
+		),
+		h.H3(g.Text("Teams Played For (NHL)")),
+		h.P(g.Text(formatTeamsList(teams))),
+		h.H3(g.Text("Season by Season")),
+		SeasonStatsTable(career.SeasonTotals, career.Position),
+	)
+}
+
+func formatTeamsList(teams []string) string {
+	if len(teams) == 0 {
+		return "No NHL teams found"
+	}
+	result := ""
+	for i, team := range teams {
+		if i > 0 {
+			result += ", "
+		}
+		result += team
+	}
+	return result
+}
+
+func SeasonStatsTable(seasons []roster.SeasonStats, position string) g.Node {
+	isGoalie := position == "G"
+
+	headers := []g.Node{
+		h.Th(g.Text("Season")),
+		h.Th(g.Text("Team")),
+		h.Th(g.Text("League")),
+		h.Th(g.Text("GP")),
+	}
+
+	if isGoalie {
+		headers = append(headers,
+			h.Th(g.Text("W")),
+			h.Th(g.Text("L")),
+			h.Th(g.Text("GAA")),
+			h.Th(g.Text("SV%")),
+		)
+	} else {
+		headers = append(headers,
+			h.Th(g.Text("G")),
+			h.Th(g.Text("A")),
+			h.Th(g.Text("P")),
+			h.Th(g.Text("+/-")),
+		)
+	}
+
+	return h.Table(
+		h.Style("width: 100%"),
+		h.THead(
+			h.Tr(headers...),
+		),
+		h.TBody(
+			g.Group(g.Map(seasons, func(s roster.SeasonStats) g.Node {
+				seasonStr := formatSeason(s.Season)
+
+				cells := []g.Node{
+					h.Td(g.Text(seasonStr)),
+					h.Td(g.Text(s.TeamName)),
+					h.Td(g.Text(s.LeagueAbbrev)),
+					h.Td(g.Text(strconv.Itoa(s.GamesPlayed))),
+				}
+
+				if isGoalie {
+					cells = append(cells,
+						h.Td(g.Text(strconv.Itoa(s.Wins))),
+						h.Td(g.Text(strconv.Itoa(s.Losses))),
+						h.Td(g.Text(formatFloat(s.GoalsAgainstAverage))),
+						h.Td(g.Text(formatFloat(s.SavePctg))),
+					)
+				} else {
+					cells = append(cells,
+						h.Td(g.Text(strconv.Itoa(s.Goals))),
+						h.Td(g.Text(strconv.Itoa(s.Assists))),
+						h.Td(g.Text(strconv.Itoa(s.Points))),
+						h.Td(g.Text(strconv.Itoa(s.PlusMinus))),
+					)
+				}
+
+				return h.Tr(cells...)
+			})),
+		),
+	)
+}
+
+func formatSeason(season int) string {
+	if season < 10000 {
+		return strconv.Itoa(season)
+	}
+	yearStart := season / 10000
+	yearEnd := season % 10000
+	return strconv.Itoa(yearStart) + "-" + strconv.Itoa(yearEnd)
+}
+
+func formatFloat(f float64) string {
+	if f == 0 {
+		return "0.000"
+	}
+	return strconv.FormatFloat(f, 'f', 3, 64)
 }

@@ -240,3 +240,92 @@ func printXForwardedForMiddleWare(logger *slog.Logger, next http.Handler) http.H
 		next.ServeHTTP(w, r)
 	})
 }
+
+func createPlayerSearchPageHandler(logger *slog.Logger) http.Handler {
+	logger.Info("creating player search page handler")
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			logger.Info("Player search page")
+			err := Page(PlayerSearchForm()).Render(w)
+			if err != nil {
+				logger.Error("Error rendering view", "error", err)
+				http.Error(w, "Error", http.StatusInternalServerError)
+			}
+		})
+}
+
+func createPlayerSearchHandler(logger *slog.Logger) http.Handler {
+	logger.Info("creating player search handler")
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			logger.Info("Player search")
+			err := r.ParseForm()
+			if err != nil {
+				http.Error(w, "Error", http.StatusInternalServerError)
+				return
+			}
+			query := r.FormValue("query")
+			if query == "" {
+				err = PlayerSearchResults(nil, "Please enter a player name").Render(w)
+				if err != nil {
+					logger.Error("Error rendering view", "error", err)
+					http.Error(w, "Error", http.StatusInternalServerError)
+				}
+				return
+			}
+
+			logger.Info("searching for player", "query", query)
+			ps := nhle.NewPlayerService()
+			results, err := ps.SearchPlayers(query)
+			if err != nil {
+				logger.Error("Error searching for player", "error", err)
+				http.Error(w, "Error", http.StatusInternalServerError)
+				return
+			}
+
+			err = PlayerSearchResults(results, "").Render(w)
+			if err != nil {
+				logger.Error("Error rendering view", "error", err)
+				http.Error(w, "Error", http.StatusInternalServerError)
+			}
+		})
+}
+
+func createPlayerCareerHandler(logger *slog.Logger) http.Handler {
+	logger.Info("creating player career handler")
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			logger.Info("Player career")
+			err := r.ParseForm()
+			if err != nil {
+				http.Error(w, "Error", http.StatusInternalServerError)
+				return
+			}
+			playerIDStr := r.FormValue("playerId")
+			if playerIDStr == "" {
+				http.Error(w, "Missing playerId", http.StatusBadRequest)
+				return
+			}
+
+			var playerID int
+			if _, err := fmt.Sscanf(playerIDStr, "%d", &playerID); err != nil {
+				http.Error(w, "Invalid playerId", http.StatusBadRequest)
+				return
+			}
+
+			logger.Info("getting player career", "playerId", playerID)
+			ps := nhle.NewPlayerService()
+			career, err := ps.GetPlayerCareer(playerID)
+			if err != nil {
+				logger.Error("Error getting player career", "error", err)
+				http.Error(w, "Error", http.StatusInternalServerError)
+				return
+			}
+
+			err = PlayerCareerView(career).Render(w)
+			if err != nil {
+				logger.Error("Error rendering view", "error", err)
+				http.Error(w, "Error", http.StatusInternalServerError)
+			}
+		})
+}

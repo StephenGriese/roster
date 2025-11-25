@@ -10,7 +10,9 @@ LDFLAGS := -X 'main.version=$(VERSION)' \
            -X 'main.goversion=$(BUILDVERSION)' \
            -X 'main.name=$(NAME)'
 
-build: staticcheck lint test clean target/local
+build: checks clean target/local
+
+checks: staticcheck lint test
 
 init:
 	git config core.hooksPath .githooks
