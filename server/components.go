@@ -15,6 +15,8 @@ func Page(nodes ...g.Node) g.Node {
 		Title:    "Roster",
 		Language: "en",
 		Head: []g.Node{
+			h.Link(h.Rel("icon"), h.Type("image/svg+xml"), h.Href("/favicon.svg")),
+			h.Link(h.Rel("alternate icon"), h.Href("/favicon.ico")),
 			h.Script(h.Src("/js/htmx-1.9.11.js")),
 			h.Link(h.Rel("stylesheet"), h.Href("https://cdn.simplecss.org/simple.min.css")),
 		},
