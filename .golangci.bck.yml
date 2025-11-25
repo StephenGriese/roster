@@ -1,0 +1,24 @@
+linters:
+  enable:
+    - goimports
+    - stylecheck
+    - misspell
+    - unparam
+    - nakedret
+    - prealloc
+    - gocyclo
+    - gocritic
+    - forbidigo
+    - gocognit
+
+  # Enable all available linters.
+  # Default: false
+  #enable-all: true
+
+  disable:
+  # Disable problematic linters
+    - depguard
+    - funlen # Function length
+    - lll # Line length
+    - gomnd # Magic number detector
+    - wsl # White space linter

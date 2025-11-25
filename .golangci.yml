@@ -1,24 +1,38 @@
+version: "2"
 linters:
   enable:
-    - goimports
-    - stylecheck
-    - misspell
-    - unparam
-    - nakedret
-    - prealloc
-    - gocyclo
-    - gocritic
     - forbidigo
     - gocognit
-
-  # Enable all available linters.
-  # Default: false
-  #enable-all: true
-
+    - gocritic
+    - gocyclo
+    - misspell
+    - nakedret
+    - prealloc
+    - staticcheck
+    - unparam
   disable:
-  # Disable problematic linters
     - depguard
-    - funlen # Function length
-    - lll # Line length
-    - gomnd # Magic number detector
-    - wsl # White space linter
+    - funlen
+    - lll
+    - mnd
+    - wsl
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
