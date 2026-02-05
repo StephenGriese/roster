@@ -1,1 +1,1 @@
-web: roster
+web: ./bin/server
