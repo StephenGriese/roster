@@ -40,6 +40,12 @@ func Form() g.Node {
 			TeamSelect(),
 			SeasonSelect(),
 			SortChoice(),
+			h.Button(
+				h.Type("submit"),
+				g.Attr("formaction", "/roster/download"),
+				g.Attr("formmethod", "get"),
+				g.Text("Download Printable Roster"),
+			),
 		),
 	})
 }

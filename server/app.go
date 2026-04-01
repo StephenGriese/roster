@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -171,6 +172,74 @@ func createPlayersForTeamHandler(logger *slog.Logger) http.Handler {
 				http.Error(w, "Error", http.StatusInternalServerError)
 			}
 		})
+}
+
+func createDownloadRosterHandler(logger *slog.Logger) http.Handler {
+	logger.Info("creating download roster handler")
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			logger.Info("download roster")
+			err := r.ParseForm()
+			if err != nil {
+				http.Error(w, "Error", http.StatusInternalServerError)
+				return
+			}
+
+			team := strings.ToUpper(strings.TrimSpace(r.FormValue("team")))
+			if team == "" {
+				team = "PHI"
+			}
+
+			season := strings.TrimSpace(r.FormValue("season"))
+			seasonValue := season
+			if seasonValue == "" {
+				seasonValue = "current"
+			}
+
+			sortBy := strings.TrimSpace(r.FormValue("sort"))
+			if sortBy == "" {
+				sortBy = "number"
+			}
+
+			ps := nhle.NewPlayerService()
+			players, err := ps.Players(team, seasonValue)
+			if err != nil {
+				http.Error(w, "Error", http.StatusInternalServerError)
+				return
+			}
+
+			sort.Slice(players, makeSortFunc(players, sortBy))
+
+			filename := fmt.Sprintf("roster-%s-%s.rtf", strings.ToLower(team), seasonValue)
+			w.Header().Set("Content-Type", "application/rtf")
+			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filename))
+
+			maxNameLen := 0
+			for _, p := range players {
+				name := p.FirstName + " " + p.LastName
+				if len(name) > maxNameLen {
+					maxNameLen = len(name)
+				}
+			}
+
+			_, _ = fmt.Fprintf(w, "{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Helvetica;}}\\f0\\fs36\n")
+			_, _ = fmt.Fprintf(w, "\\b %s Roster\\b0\\line\n", escapeRTF(team))
+			_, _ = fmt.Fprintf(w, "\\line\n")
+
+			for _, p := range players {
+				_, _ = fmt.Fprintf(w, "%-4d %-*s\\line\n", p.SweaterNumber, maxNameLen, escapeRTF(p.FirstName+" "+p.LastName))
+			}
+			_, _ = fmt.Fprintf(w, "}\n")
+		})
+}
+
+func escapeRTF(s string) string {
+	replacer := strings.NewReplacer(
+		`\`, `\\`,
+		`{`, `\\{`,
+		`}`, `\\}`,
+	)
+	return replacer.Replace(s)
 }
 
 func makeSortFunc(players []roster.Player, sortBy string) func(i, j int) bool {

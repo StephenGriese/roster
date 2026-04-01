@@ -17,6 +17,7 @@ func addRoutes(
 	}
 	mux.Handle("/roster", loggingMiddleware(logger, printXForwardedForMiddleWare(logger, createGetRosterHandler(logger))))
 	mux.Handle("/roster/players-for-team", loggingMiddleware(logger, printXForwardedForMiddleWare(logger, createPlayersForTeamHandler(logger))))
+	mux.Handle("/roster/download", loggingMiddleware(logger, printXForwardedForMiddleWare(logger, createDownloadRosterHandler(logger))))
 	mux.Handle("/player-search", loggingMiddleware(logger, printXForwardedForMiddleWare(logger, createPlayerSearchPageHandler(logger))))
 	mux.Handle("/player-search/search", loggingMiddleware(logger, printXForwardedForMiddleWare(logger, createPlayerSearchHandler(logger))))
 	mux.Handle("/player-search/career", loggingMiddleware(logger, printXForwardedForMiddleWare(logger, createPlayerCareerHandler(logger))))
