@@ -222,8 +222,9 @@ func createDownloadRosterHandler(logger *slog.Logger) http.Handler {
 				}
 			}
 
+			teamName := teamDisplayName(team)
 			_, _ = fmt.Fprintf(w, "{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Helvetica;}}\\f0\\fs36\n")
-			_, _ = fmt.Fprintf(w, "\\b %s Roster\\b0\\line\n", escapeRTF(team))
+			_, _ = fmt.Fprintf(w, "\\b %s\\b0\\line\n", escapeRTF(teamName))
 			_, _ = fmt.Fprintf(w, "\\line\n")
 
 			for _, p := range players {
@@ -240,6 +241,49 @@ func escapeRTF(s string) string {
 		`}`, `\\}`,
 	)
 	return replacer.Replace(s)
+}
+
+func teamDisplayName(team string) string {
+	names := map[string]string{
+		"ANA": "Anaheim Ducks",
+		"BOS": "Boston Bruins",
+		"BUF": "Buffalo Sabres",
+		"CAR": "Carolina Hurricanes",
+		"CBJ": "Columbus Blue Jackets",
+		"CGY": "Calgary Flames",
+		"CHI": "Chicago Blackhawks",
+		"COL": "Colorado Avalanche",
+		"DAL": "Dallas Stars",
+		"DET": "Detroit Red Wings",
+		"EDM": "Edmonton Oilers",
+		"FLA": "Florida Panthers",
+		"LAK": "Los Angeles Kings",
+		"MIN": "Minnesota Wild",
+		"MTL": "Montreal Canadiens",
+		"NJD": "New Jersey Devils",
+		"NSH": "Nashville Predators",
+		"NYI": "New York Islanders",
+		"NYR": "New York Rangers",
+		"OTT": "Ottawa Senators",
+		"PHI": "Philadelphia Flyers",
+		"PIT": "Pittsburgh Penguins",
+		"SEA": "Seattle Kraken",
+		"SJS": "San Jose Sharks",
+		"STL": "St. Louis Blues",
+		"TBL": "Tampa Bay Lightning",
+		"TOR": "Toronto Maple Leafs",
+		"UTA": "Utah Mammoth",
+		"VAN": "Vancouver Canucks",
+		"VGK": "Vegas Golden Knights",
+		"WPG": "Winnipeg Jets",
+		"WSH": "Washington Capitals",
+	}
+
+	if name, ok := names[team]; ok {
+		return name
+	}
+
+	return team
 }
 
 func makeSortFunc(players []roster.Player, sortBy string) func(i, j int) bool {

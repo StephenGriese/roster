@@ -206,7 +206,7 @@ func CentralOptGroup() g.Node {
 		h.Option(h.Value("MIN"), g.Text("wild")),
 		h.Option(h.Value("NSH"), g.Text("predators")),
 		h.Option(h.Value("STL"), g.Text("blues")),
-		h.Option(h.Value("UTA"), g.Text("utah hockey club")),
+		h.Option(h.Value("UTA"), g.Text("utah mammoth")),
 		h.Option(h.Value("WPG"), g.Text("jets")),
 	)
 }
