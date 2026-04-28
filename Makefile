@@ -10,12 +10,28 @@ LDFLAGS := -X 'main.version=$(VERSION)' \
            -X 'main.goversion=$(BUILDVERSION)' \
            -X 'main.name=$(NAME)'
 
-build: checks clean target/local
+# Sentinel file — proves `make init` has been run on this clone.
+HOOKS_SENTINEL=.git/hooks/.githooks-installed
 
-checks: staticcheck lint test
+.PHONY: init checks staticcheck lint test build clean
+
+# Guard target — aborts with a helpful message if init was never run.
+$(HOOKS_SENTINEL):
+	@echo ""
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo "⚠️  Run 'make init' first to configure git hooks."
+	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+	@echo ""
+	@exit 1
 
 init:
 	git config core.hooksPath .githooks
+	@touch $(HOOKS_SENTINEL)
+	@echo "✓ Git hooks configured. You're ready to develop."
+
+build: checks clean target/local
+
+checks: $(HOOKS_SENTINEL) staticcheck lint test
 
 staticcheck:
 	staticcheck ./...
@@ -29,7 +45,6 @@ test:
 target/local: modules
 	mkdir -p target/bin && go build -ldflags "$(LDFLAGS)" -o target/bin/server ./cmd/server
 
-
 modules:
 	go mod tidy
 
@@ -38,4 +53,3 @@ clean-target:
 
 clean: clean-target
 
-.PHONY: clean lint modules build
