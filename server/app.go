@@ -84,10 +84,12 @@ func NewServer(
 	buildInfo BuildInfo,
 ) http.Handler {
 	mux := http.NewServeMux()
+	ps := nhle.NewPlayerService()
 	addRoutes(
 		mux,
 		logger,
 		buildInfo,
+		ps,
 	)
 	return mux
 }
@@ -121,12 +123,11 @@ func createRootHandler(logger *slog.Logger, getRosterHandler, fileServer http.Ha
 		})
 }
 
-func createGetRosterHandler(logger *slog.Logger) http.Handler {
+func createGetRosterHandler(logger *slog.Logger, ps nhle.PlayerService) http.Handler {
 	logger.Info("creating get roster handler")
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			logger.Info("Getting roster")
-			ps := nhle.NewPlayerService()
 			players, err := ps.Players("PHI", "current")
 			if err != nil {
 				http.Error(w, "Error", http.StatusInternalServerError)
@@ -143,7 +144,7 @@ func createGetRosterHandler(logger *slog.Logger) http.Handler {
 		})
 }
 
-func createPlayersForTeamHandler(logger *slog.Logger) http.Handler {
+func createPlayersForTeamHandler(logger *slog.Logger, ps nhle.PlayerService) http.Handler {
 	logger.Info("creating players for team handler")
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -157,7 +158,6 @@ func createPlayersForTeamHandler(logger *slog.Logger) http.Handler {
 			sortBy := r.FormValue("sort")
 			season := r.FormValue("season")
 			logger.Info("formValues", "team", team, "sortBy", sortBy, "season", season)
-			ps := nhle.NewPlayerService()
 			players, err := ps.Players(team, season)
 			if err != nil {
 				http.Error(w, "Error", http.StatusInternalServerError)
@@ -174,7 +174,7 @@ func createPlayersForTeamHandler(logger *slog.Logger) http.Handler {
 		})
 }
 
-func createDownloadRosterHandler(logger *slog.Logger) http.Handler {
+func createDownloadRosterHandler(logger *slog.Logger, ps nhle.PlayerService) http.Handler {
 	logger.Info("creating download roster handler")
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -201,7 +201,6 @@ func createDownloadRosterHandler(logger *slog.Logger) http.Handler {
 				sortBy = "number"
 			}
 
-			ps := nhle.NewPlayerService()
 			players, err := ps.Players(team, seasonValue)
 			if err != nil {
 				http.Error(w, "Error", http.StatusInternalServerError)
@@ -367,7 +366,7 @@ func createPlayerSearchPageHandler(logger *slog.Logger) http.Handler {
 		})
 }
 
-func createPlayerSearchHandler(logger *slog.Logger) http.Handler {
+func createPlayerSearchHandler(logger *slog.Logger, ps nhle.PlayerService) http.Handler {
 	logger.Info("creating player search handler")
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -388,7 +387,6 @@ func createPlayerSearchHandler(logger *slog.Logger) http.Handler {
 			}
 
 			logger.Info("searching for player", "query", query)
-			ps := nhle.NewPlayerService()
 			results, err := ps.SearchPlayers(query)
 			if err != nil {
 				logger.Error("Error searching for player", "error", err)
@@ -404,7 +402,7 @@ func createPlayerSearchHandler(logger *slog.Logger) http.Handler {
 		})
 }
 
-func createPlayerCareerHandler(logger *slog.Logger) http.Handler {
+func createPlayerCareerHandler(logger *slog.Logger, ps nhle.PlayerService) http.Handler {
 	logger.Info("creating player career handler")
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -427,7 +425,6 @@ func createPlayerCareerHandler(logger *slog.Logger) http.Handler {
 			}
 
 			logger.Info("getting player career", "playerId", playerID)
-			ps := nhle.NewPlayerService()
 			career, err := ps.GetPlayerCareer(playerID)
 			if err != nil {
 				logger.Error("Error getting player career", "error", err)
