@@ -42,7 +42,7 @@ lint:
 test:
 	go test ./...
 
-target/local: modules
+target/local:
 	mkdir -p target/bin && go build -ldflags "$(LDFLAGS)" -o target/bin/server ./cmd/server
 
 modules:
