@@ -2,6 +2,12 @@
 
 NHL roster web application backed by the public NHL API.
 
+## Setup (required once after cloning)
+
+```bash
+make init   # configures core.hooksPath and creates sentinel; make checks/build abort without this
+```
+
 ## Commands
 
 ```bash
