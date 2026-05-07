@@ -227,7 +227,7 @@ func createDownloadRosterHandler(logger *slog.Logger, ps nhle.PlayerService) htt
 			_, _ = fmt.Fprintf(w, "\\line\n")
 
 			for _, p := range players {
-				_, _ = fmt.Fprintf(w, "%-4d %-*s\\line\n", p.SweaterNumber, maxNameLen, escapeRTF(p.FirstName+" "+p.LastName))
+				_, _ = fmt.Fprintf(w, "%-4d %-*s\\line\n", p.SweaterNumber, maxNameLen, escapeRTF(p.FullName()))
 			}
 			_, _ = fmt.Fprintf(w, "}\n")
 		})
