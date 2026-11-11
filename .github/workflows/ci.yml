@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          # Latest stable toolchain: some modules still declare an old `go`
+          # directive, which would install a Go too old for the pinned tools.
+          go-version: 'stable'
+          cache: true
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v7
+        with:
+          version: v2.14.0
+
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@2026.2.1
+
+      - name: Configure hooks
+        run: make init
+
+      - name: Build (staticcheck, lint, race tests)
+        run: make build
+
+      - name: Verify binary matches source
+        run: make verify
