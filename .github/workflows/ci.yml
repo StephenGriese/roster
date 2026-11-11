@@ -41,7 +41,7 @@ jobs:
           version: v2.14.0
 
       - name: Install staticcheck
-        run: go install honnef.co/go/tools/cmd/staticcheck@2026.2.1
+        run: go install honnef.co/go/tools/cmd/staticcheck@2026.2.2
 
       - name: Configure hooks
         run: make init
