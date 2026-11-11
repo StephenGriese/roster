@@ -3,7 +3,7 @@
 # Test script for the player search feature
 
 echo "Starting server..."
-PORT=8080 ./target/bin/server &
+PORT=8080 ./bin/server &
 SERVER_PID=$!
 
 # Wait for server to start

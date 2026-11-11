@@ -25,7 +25,7 @@ Search for any NHL player by name (or partial name) to view their complete caree
 
 2. Set the PORT environment variable and run:
    ```bash
-   PORT=8080 ./target/bin/server
+   PORT=8080 ./bin/server
    ```
 
 3. Navigate to:
